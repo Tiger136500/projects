@@ -225,7 +225,7 @@ class Model(dict, metaclass=ModelMetaclass):
 
     @classmethod
     async def find(cls, pk):
-        'find  object by primary key'
+        'find  object by primary key '
         rs = await  select('%s where  `%s`=?' % (cls.__select__, cls.__primary_key__), [pk], 1)
         if len(rs):
             return None
