@@ -12,6 +12,9 @@ import www.orm
 from www.coroweb import add_routes, add_static
 
 
+## handlers 是url处理模块在后面会创建编写, 可先从github下载到www下,以防报错
+from www.handlers import cookie2user, COOKIE_NAME
+
 # 初始化jinja2的函数
 def init_jinja2(app, **kw):
     logging.info('init jinja2....')
@@ -45,7 +48,6 @@ async def logger_factory(app, handler):
 
 
 # 认证处理工厂  --把当前用户绑定到request上   并对URL/manage尽进行拦截  检查当前用户是否是管理员身份
-## 需要handlers.py的支持, 当handlers.py在API章节里完全编辑完再将下面代码的双井号去掉
 async def auth_factory(app, handler):
    async def auth(request):
        logging.info('check user: %s %s' % (request.method, request.path))
@@ -103,7 +105,7 @@ async def response_factory(app, handler):
                 return resp
             else:
                 # 在handlers.py完全完成后,去掉下一行的双井号
-                # r['__user__'] = request.__user__
+                r['__user__'] = request.__user__
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 return resp
@@ -139,7 +141,7 @@ def datetime_filter(t):
 async def init(loop):
     await  www.orm.create_pool(loop=loop, **configs.db)
 
-    app = web.Application(loop=loop, middlewares=[logger_factory, response_factory])
+    app = web.Application(loop=loop, middlewares=[  logger_factory, auth_factory, response_factory])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
     add_routes(app, 'handlers')
     add_static(app)

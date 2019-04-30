@@ -10,7 +10,7 @@ from www.apis import Page, APIValueError, APIResourceNotFoundError
 from www.models import User, Comment, Blog, next_id
 from www.config import configs
 
-COOKIE_NAME = 'awesome'
+COOKIE_NAME = 'awesession'
 _COOKIE_KEY = configs.session.secret
 
 
@@ -164,7 +164,7 @@ def manage():
 
 
 ## 评论管理页面
-@get('/manage.comments')
+@get('/manage/comments')
 def manage_comments(*, page=1):
     return {
         '__template__': 'manage_comments.html',
@@ -177,7 +177,7 @@ def manage_comments(*, page=1):
 def manage_blogs(*, page=1):
     return {
         '__template__': 'manage_blogs.html',
-        'page_ndex': get_page_index(page)
+        'page_index': get_page_index(page)
     }
 
 
@@ -254,7 +254,7 @@ async def api_delete_comments(id, request):
 @get('/api/users')
 async def api_get_users(*, page=1):
     page_index = get_page_index(page)
-    num = await User.findNumber('coundt(id)')
+    num = await User.findNumber('count(id)')
     p = Page(num, page_index)
     if num == 0:
         return dict(page=p, users=())

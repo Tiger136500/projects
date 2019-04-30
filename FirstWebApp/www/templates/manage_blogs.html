@@ -1,4 +1,4 @@
-!-- 继承父模板 '__base__.html' -->
+<!-- 继承父模板 '__base__.html' -->
 {% extends '__base__.html' %}
 <!--jinja2 title 块内容替换-->
 {% block title %}日志{% endblock %}
@@ -6,7 +6,6 @@
 {% block beforehead %}
 <!--script中构建vue,向后端API提交日志管理操作相关数据-->
 <script>
-
 function initVM(data) {
     var vm = new Vue({
         el: '#vm',
