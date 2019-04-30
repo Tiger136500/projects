@@ -1,10 +1,8 @@
 import asyncio, os, inspect, logging, functools
-
 from urllib import parse
 from aiohttp import web
+from www.apis import APIError
 
-
-# from apis import APOError
 
 # 编写装饰函数@get()
 def get(path):
@@ -23,7 +21,7 @@ def get(path):
 # 编写装饰函数@post()
 def post(path):
     def decorator(func):
-        @functools.wraps(*args, **kw)
+        @functools.wraps(func)
         def wrapper(*args, **kw):
             return func(*args, **kw)
 
@@ -98,16 +96,17 @@ class RequestHandler(object):
                 if not request.content_type:
                     return web.HTTPBadRequest('Missing Content_Type.')
                 ct = request.content_type.lower()
-                if ct.startwith('applicaton/json'):
+                if ct.startswith('application/json'):
                     params = await request.json()
                     if not isinstance(params, dict):
                         return web.HTTPBadRequest('JSON body must be Object.')
                     kw = params
-                elif ct.startwith('application/x-www-form-urlencoded') or ct.startwith('multipart/form-data'):
+                elif ct.startswith('application/x-www-form-urlencoded') or ct.startswith('multipart/form-data'):
                     params = await request.post()
                     kw = dict(**params)
                 else:
-                    return web.HTTPBadRequest('Unsupported Content-Type:%s' % request.content_type)
+                    print(request.content_type)
+                    return web.HTTPBadRequest('Unsupported Content-Type: %s' % request.content_type)
             if request.method == "GET":
                 qs = request.query_string
                 if qs:
@@ -131,7 +130,7 @@ class RequestHandler(object):
             kw['request'] = request
         if self._required_kw_args:
             for name in self._required_kw_args:
-                if not namr in kw:
+                if not name in kw:
                     return web.HTTPBadRequest('Missing argument:%s' % name)
         logging.info('call with args:%s' % str(kw))
         try:
@@ -145,7 +144,7 @@ class RequestHandler(object):
 def add_static(app):
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
     app.router.add_static('/static/', path)
-    logging.info('add static %s => %s'% ('/static/', path))
+    logging.info('add static %s => %s' % ('/static/', path))
 
 
 # 定义add_route函数用来注册一个url处理函数
@@ -166,7 +165,6 @@ def add_routes(app, module_name):
     n = module_name.rfind('.')
     if n == (-1):
         mod = __import__(module_name, globals(), locals())
-
     else:
         name = module_name[n + 1:]
         mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)

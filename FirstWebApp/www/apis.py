@@ -1,4 +1,4 @@
-import json, loggin, inspect, functools
+import json, logging, inspect, functools
 
 
 class Page(object):
