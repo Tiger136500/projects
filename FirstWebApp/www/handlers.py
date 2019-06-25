@@ -82,7 +82,7 @@ async def index(*, page='1'):
     if num == 0:
         blogs = []
     else:
-        blogs = await Blog.findAll(orderBy='create_at desc', limit=(p.offset, p.limit))
+        blogs = await Blog.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
     return {
         '__template__': 'blogs.html',
         'page': p,
@@ -158,8 +158,9 @@ def signout(request):
 
 
 ## 获取管理页面
-@get('/manage')
+@get('/manage/')
 def manage():
+    print("草")
     return 'redirect:/manage/comments'
 
 
@@ -174,7 +175,7 @@ def manage_comments(*, page=1):
 
 ## 日志管理页面
 @get('/manage/blogs')
-def manage_blogs(*, page=1):
+def manage_blogs(*, page='1'):
     return {
         '__template__': 'manage_blogs.html',
         'page_index': get_page_index(page)
@@ -218,7 +219,7 @@ async def api_comments(*, page=1):
     p = Page(num, page_index)
     if num == 0:
         return dict(page=p, comments=())
-    comments = await Comment.findAll(orderBy='create_at desc', limit=(p.offset, p.limit))
+    comments = await Comment.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
     return dict(page=p, comments=comments)
 
 
