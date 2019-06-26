@@ -1,7 +1,7 @@
 import asyncio, os, inspect, logging, functools
 from urllib import parse
 from aiohttp import web
-from www.apis import APIError
+from apis import APIError
 
 
 # 编写装饰函数@get()

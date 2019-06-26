@@ -3,12 +3,12 @@ import re, time, json, logging, hashlib, base64, asyncio
 ## markdown 是处理日志文本的一种格式语法，具体语法使用请百度
 import markdown
 from aiohttp import web
-from www.coroweb import get, post
+from coroweb import get, post
 
 ## 分页管理以及调取API时的错误信息
-from www.apis import Page, APIValueError, APIResourceNotFoundError
-from www.models import User, Comment, Blog, next_id
-from www.config import configs
+from apis import Page, APIValueError, APIResourceNotFoundError
+from models import User, Comment, Blog, next_id
+from config import configs
 
 COOKIE_NAME = 'awesession'
 _COOKIE_KEY = configs.session.secret
@@ -196,10 +196,11 @@ def manage_create_blog():
 @get('/manage/blogs/edit')
 def manage_edit_blog(*, id):
     return {
-        '__template__': 'manage_blog_eidt.html',
+        '__template__': 'manage_blog_edit.html',
         'id': id,
         'action': '/api/blogs/%s' % id
     }
+
 
 
 ## 用户管理页面
@@ -376,3 +377,10 @@ async def api_delete_users(id, request):
             await c.update()
     id = id_buff
     return dict(id=id)
+
+## 非管理员用户API
+@get('/notAdmin')
+def register():
+    return {
+       '__template__': 'notAdmin.html'
+    }

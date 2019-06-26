@@ -1,4 +1,4 @@
-import www.config_default
+import config_default
 
 
 class Dict(dict):
@@ -41,11 +41,11 @@ def toDict(d):
     return D
 
 
-configs = www.config_default.configs
+configs = config_default.configs
 try:
-    import www.config_override
+    import config_override
 
-    configs = merge(configs, www.config_override.configs)
+    configs = merge(configs, config_override.configs)
 except ImportError:
     pass
 configs = toDict(configs)

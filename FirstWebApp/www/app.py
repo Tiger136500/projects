@@ -6,14 +6,14 @@ from datetime import datetime
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
 
-from www.config import configs
+from config import *;
 
-import www.orm
-from www.coroweb import add_routes, add_static
+import orm;
+from coroweb import add_routes, add_static
 
 
 ## handlers 是url处理模块在后面会创建编写, 可先从github下载到www下,以防报错
-from www.handlers import cookie2user, COOKIE_NAME
+from handlers import cookie2user, COOKIE_NAME
 
 # 初始化jinja2的函数
 def init_jinja2(app, **kw):
@@ -59,7 +59,7 @@ async def auth_factory(app, handler):
                logging.info('set current user: %s' % user.email)
                request.__user__ = user
        if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
-           return web.HTTPFound('/signin')
+           return web.HTTPFound('/notAdmin')
        return (await handler(request))
    return auth
 
@@ -139,7 +139,7 @@ def datetime_filter(t):
 
 
 async def init(loop):
-    await  www.orm.create_pool(loop=loop, **configs.db)
+    await  orm.create_pool(loop=loop, **configs.db)
 
     app = web.Application(loop=loop, middlewares=[  logger_factory, auth_factory, response_factory])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
